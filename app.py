@@ -30,11 +30,9 @@ def generar_excel():
     buffer.seek(0)
     return buffer.read()
 
-# Generar y codificar el archivo
 excel_data = generar_excel()
 b64_excel = base64.b64encode(excel_data).decode()
 link_descarga = f'<a href="data:application/octet-stream;base64,{b64_excel}" download="plantilla_parcela.xlsx">📥 Haz clic aquí para descargar la plantilla</a>'
-
 st.markdown(link_descarga, unsafe_allow_html=True)
 
 # 🔹 SECCIÓN 2: SUBIR Y VALIDAR ARCHIVO
