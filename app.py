@@ -1,7 +1,7 @@
 st.subheader("📄 Plantilla de ejemplo")
 st.markdown("Descarga la plantilla base con ejemplos para rellenar correctamente los datos:")
 
-@st.cache_data
+
 def generar_plantilla():
     datos_ejemplo = {
         "nombre de parcela": ["Parcela 1", "Parcela 2"],
