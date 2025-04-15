@@ -1,47 +1,34 @@
+import streamlit as st
 import pandas as pd
-import os
+import io
 
-def importar_parcelas(ruta_excel):
-    """
-    Carga y valida un archivo Excel con información de parcelas agrícolas.
-    Devuelve dos DataFrames: uno con datos válidos y otro con errores.
-    """
-    if not os.path.exists(ruta_excel):
-        raise FileNotFoundError("No se encuentra el archivo especificado.")
+st.set_page_config(page_title="Carga de parcelas", layout="centered")
+st.title("🌾 Carga de datos de parcelas agrícolas")
 
-    try:
-        df_original = pd.read_excel(ruta_excel)
-        columnas_obligatorias = [
-            "nombre de parcela",
-            "código sigpac",
-            "municipio",
-            "superficie",
-            "cultivo",
-            "variedad",
-            "año de plantación",
-            "tipo de manejo hídrico",
-            "tipo de cultivo"
-        ]
+# BLOQUE DE LA PLANTILLA AQUÍ
+st.subheader("📄 Plantilla de ejemplo")
+st.markdown("Descarga la plantilla base con ejemplos para rellenar correctamente los datos:")
 
-        # Verificar columnas
-        faltantes = [col for col in columnas_obligatorias if col not in df_original.columns]
-        if faltantes:
-            raise ValueError(f"Faltan las siguientes columnas en el Excel: {', '.join(faltantes)}")
+def generar_plantilla():
+    datos_ejemplo = {
+        "nombre de parcela": ["Parcela 1", "Parcela 2"],
+        "código sigpac": ["123456789ABC", "987654321XYZ"],
+        "municipio": ["Olite", "Vilafranca del Penedès"],
+        "superficie": [1.5, 2.3],
+        "cultivo": ["Olivo", "Vid"],
+        "variedad": ["Picual", "Tempranillo"],
+        "año de plantación": [2005, 2010],
+        "tipo de manejo hídrico": ["secano", "regadío"],
+        "tipo de cultivo": ["ecológico", "biodinámico"]
+    }
+    df_ejemplo = pd.DataFrame(datos_ejemplo)
+    buffer = io.BytesIO()
+    df_ejemplo.to_excel(buffer, index=False, engine="openpyxl")
+    return buffer.getvalue()
 
-        df = df_original.copy()
-        df["año de plantación"] = pd.to_numeric(df["año de plantación"], errors="coerce")
-        df["superficie"] = pd.to_numeric(df["superficie"], errors="coerce")
-
-        df_validas = df[
-            (df["superficie"] > 0) &
-            (df["año de plantación"].notna()) &
-            (df["año de plantación"] > 0)
-        ]
-
-        df_errores = df[~df.index.isin(df_validas.index)]
-
-        return df_validas, df_errores
-
-    except Exception as e:
-        print(f"Error al importar el archivo: {e}")
-        return None, None
+st.download_button(
+    label="📥 Descargar plantilla Excel",
+    data=generar_plantilla(),
+    file_name="plantilla_parcela.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
