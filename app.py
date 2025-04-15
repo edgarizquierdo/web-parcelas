@@ -1,3 +1,5 @@
+import io
+from importar_parcelas import importar_parcelas
 import streamlit as st
 import pandas as pd
 import io
